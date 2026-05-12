@@ -9,19 +9,25 @@ const emailSent = ref(false)
 const selectedFile = ref(null)
 const filePreview = ref(null)
 const fileInput = ref(null)
+const resolveRequestCount = ref(0)
 
-const systemPrompt = `Ets un expert en suport tècnic informàtic que parla EXCLUSIVAMENT en català. 
-El teu objectiu és ajudar usuaris PRINCIPIANTS que no tenen coneixements tècnics.
+const systemPrompt = `Ets un tutor tècnic que ensenya a arreglar coses pas a pas. Parles EXCLUSIVAMENT en català.
 
-NORMES DE COMUNICACIÓ:
-1. LLENGUATGE MOLT SENZILL: No utilitzis paraules tècniques. Digues "aparell" en lloc de "perifèric", "cable" en lloc de "connexió física", etc.
-2. PAS A PAS: Explica les coses a poc a poc, pas a pas, perquè l'usuari ho pugui fer ell mateix.
-3. INTUÏTIU: Fes servir exemples fàcils d'entendre.
-4. AMABILITAT: Sigues pacient i ajuda a l'usuari a no posar-se nerviós.
+REGLA D'OR: Només pots donar UN PAS a la vegada. No donis llistes.
 
-Si després d'uns quants intents el problema persisteix, suggereix amb delicadesa que usin el botó per avisar al coordinador TAC.
+ESTRUCTURA DE CADA RESPOSTA:
+1. COMPROVACIÓ: Una instrucció molt curta d'una sola cosa que l'usuari ha de mirar o tocar ara mateix.
+2. PREGUNTA: Una pregunta per saber si ha funcionat o què veu l'usuari.
 
-RECORDA: Respon SEMPRE en català correcte però molt planer.`
+NORMES:
+- Respostes de màxim 2 frases.
+- No utilitzis paraules difícils.
+- Fins que l'usuari no et digui que ha fet el pas, no donis el següent.
+- Anima a l'usuari: "Tu pots!", "Anem a pams".
+
+Exemple:
+Usuari: "No tinc internet."
+Tu: "Mira si el cable de darrere l'aparell està ben endollat. Està la llumeta encesa?"`
 
 const handleFileChange = (e) => {
   const file = e.target.files[0]
@@ -79,6 +85,13 @@ const askAssistant = async (initialMessage = null) => {
   clearFile()
   loading.value = true
 
+  // Comprovar si l'usuari demana resoldre el problema
+  const resolveKeywords = ['resoldre', 'arregla', 'soluciona', 'fés-ho', 'repara', 'funciona', 'no puc', 'ajuda']
+  const isResolveRequest = resolveKeywords.some(keyword => currentQuestion.toLowerCase().includes(keyword))
+  if (isResolveRequest) {
+    resolveRequestCount.value++
+  }
+
   try {
     let images = []
     if (currentFile && currentFile.type.startsWith('image/')) {
@@ -119,11 +132,11 @@ const askAssistant = async (initialMessage = null) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama3.2:1b',
+          model: 'llama3.2:1b', // Podries provar 'llama3.2:3b' si el tens descarregat per a millor qualitat
           messages: [
-            { role: 'system', content: systemPrompt },
+            { role: 'system', content: systemPrompt + "\n\nINSTRUCCIÓ CRÍTICA: Utilitza la informació de la web per donar una resposta DEFINITIVA, SENZILLA i ÚTIL. No diguis 'segons la web', simplement explica la solució." },
             ...chatHistory.value,
-            { role: 'system', content: `Informació trobada a la web: ${searchData.results}. Utilitza aquesta informació per respondre a l'usuari en català.` }
+            { role: 'system', content: `DADES REALS TROBADES A INTERNET (Utilitza-les per respondre): ${searchData.results}` }
           ],
           stream: false
         })
@@ -134,8 +147,8 @@ const askAssistant = async (initialMessage = null) => {
 
     chatHistory.value.push({ role: 'assistant', content: assistantContent })
     
-    // Si el xat s'allarga, suggerim avisar al TAC
-    if (chatHistory.value.length >= 4) {
+    // Només mostrem el botó del TAC si l'usuari ha insistit 5 vegades en resoldre-ho
+    if (resolveRequestCount.value >= 5) {
       showTACButton.value = true
     }
   } catch (error) {

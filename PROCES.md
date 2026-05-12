@@ -1,9 +1,16 @@
+Autors: Miquel Bauçà Rigo
+Data: 11-05-2026
+
+Versió: 1.1
+
+Pàgina: 1/1
+
 # Registre del Procés de Desenvolupament - Assistent Informàtic IA
 
 ## Fase 1: Recerca i Anàlisi (06/05/2026)
 ### Documents analitzats:
-1. `Digitalització. Enunciat del projecte final.pdf`: Requisits oficials del professor (IA central, fluxos agèntics, repositori públic, informe manual).
-2. `projecte_assistent_informatic_nivell10.pdf`: Idea inicial de l'alumne (Vue.js + Ollama).
+1. `Digitalització. Enunciat del projecte final.pdf`: Requisits oficials del professor.
+2. `projecte_assistent_informatic_nivell10.pdf`: Idea inicial (Miquel Bauçà Rigo).
 
 ### Decisions de disseny i millores proposades:
 - **Enfocament agèntic:** L'assistent no serà un simple xat, sinó un agent de diagnòstic que fa preguntes interactives.
@@ -115,4 +122,62 @@
 ## Resum de la sessió (09/05/2026)
 - **Objectiu assolit:** Tancat el cercle de suport amb l'enviament d'emails al coordinador TAC.
 - **Estat del Workspace:** Projecte finalitzat amb totes les funcionalitats demanades, documentació al dia i interfície polida.
+
+## Fase 8: Enfocament Pedagògic i Autonomia de l'Usuari (11/05/2026)
+### Objectiu:
+- Convertir l'assistent en un recurs educatiu que ensenyi a l'usuari a resoldre els seus propis problemes, en lloc de donar-li la solució mastegada o derivar-lo ràpidament a un tècnic.
+
+### Accions realitzades:
+1. **Refinament del System Prompt (Pedagogia):**
+   - S'han actualitzat les instruccions de l'IA perquè utilitzi un llenguatge extremadament senzill i concret (frases curtes, zero tecnicismes).
+   - S'ha instruït a l'IA per explicar el "PER QUÈ" de cada acció, fomentant la curiositat i la pèrdua de por a la tecnologia.
+   - L'IA ara actua com un tutor que guia, no com un tècnic que executa.
+2. **Implementació del Comptador de Paciència:**
+   - S'ha afegit una variable de control `resolveRequestCount` al frontend.
+   - El sistema ara analitza els missatges de l'usuari buscant paraules clau de "resolució immediata" (ex: "arregla-m'ho", "soluciona-ho", "no puc").
+3. **Restricció de l'Escalat (Mandar missatges):**
+   - S'ha bloquejat l'aparició del botó per avisar al coordinador TAC.
+   - El botó només es mostra si l'usuari ha insistit almenys **5 vegades** en que l'IA li resolgui el problema directament.
+   - Fins arribar a aquest punt, l'IA respon amb ànims i passos alternatius encara més senzills.
+
+### Estat actual:
+- L'assistent compleix ara una funció didàctica activa.
+- S'ha reduït la dependència del servei tècnic humà per a problemes trivials, forçant l'aprenentatge de l'usuari final.
+
+## Fase 9: Optimització del Motor de Cerca i Claredat (11/05/2026)
+### Objectiu:
+- Millorar la qualitat i precisió de les respostes quan l'IA utilitza internet, assegurant una estructura clara i útil per a l'usuari.
+
+### Accions realitzades:
+1. **Millora del Backend (Cerca Web):**
+   - S'ha reprogramat l'endpoint `/api/search` per extreure múltiples "Related Topics" i descripcions detallades de DuckDuckGo.
+   - S'ha millorat el filtratge de dades perquè l'IA rebi informació més rica per al diagnòstic.
+2. **Nova Estructura de Resposta (System Prompt):**
+   - S'ha imposat una estructura de tres parts per a cada resposta: **1. Resposta Directa**, **2. Explicació Senzilla (Per què)** i **3. Pas Pràctic**.
+3. **Interpretació IA Avançada:**
+   - S'ha afegit una "Instrucció Crítica" perquè l'IA prioritzi les dades reals de la cerca i les presenti sense embuts, millorant la precisió tècnica.
+
+### Estat actual:
+- Les respostes són ara molt més professionals, estructurades i basades en dades actualitzades.
+
+## Fase 10: Interacció Guiada "Pas a Pas" (11/05/2026)
+### Objectiu:
+- Evitar que l'usuari se senti aclaparat per massa informació. L'assistent ha d'actuar com un guia en temps real que acompanya l'usuari en cada petita acció.
+
+### Accions realitzades:
+1. **Nou Protocol de Resposta (Micro-instruccions):**
+   - S'ha reprogramat el `systemPrompt` per imposar la "Regla d'Or": **Només un pas per missatge**.
+   - L'IA ja no dona solucions completes, sinó que demana a l'usuari que faci una comprovació física o de software i que informi del resultat.
+2. **Minimalisme i Claredat:**
+   - S'han limitat les respostes a un màxim de 2 frases per mantenir el focus.
+   - S'ha eliminat qualsevol tipus de llista o enumeració per forçar la interacció continuada.
+3. **Refinament del Flux de Diagnòstic:**
+   - L'IA ara pregunta activament: "Què veus ara?", "Ha funcionat?", abans de proposar la següent acció.
+
+### Estat actual:
+- L'assistent ofereix ara una experiència molt més propera a la d'un tècnic real que està al costat de l'usuari, assegurant que cada pas es completa abans de seguir.
+
+## Resum final de la sessió (11/05/2026)
+- **Objectiu assolit:** Implementació d'un sistema de diagnòstic interactiu extremadament senzill i eficaç.
+- **Estat del Workspace:** Projecte optimitzat per a la màxima usabilitat pedagògica.
 

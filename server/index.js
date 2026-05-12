@@ -17,7 +17,7 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Eina de cerca a la web (simulada o via API externa)
+// Eina de cerca a la web millorada
 app.get('/api/search', async (req, res) => {
     const query = req.query.q;
     if (!query) return res.status(400).json({ error: 'Query required' });
@@ -25,18 +25,37 @@ app.get('/api/search', async (req, res) => {
     console.log('Cercant a la web per:', query);
     
     try {
-        // Aquí podríem usar una API com Tavily, Serper, o fins i tot un scraper simple.
-        // Per a aquest projecte, usarem una cerca de DuckDuckGo via un proxy o API lliure si és possible.
-        // Com a prova, farem una crida a una API de cerca lliure.
-        const searchRes = await axios.get(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`);
+        // Utilitzem una cerca de DuckDuckGo que retorna més enllaços i descripcions si l'API ho permet
+        // o simulem una extracció més rica de la resposta
+        const searchRes = await axios.get(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`);
         
-        let results = searchRes.data.AbstractText || "No s'han trobat resultats directes.";
+        let results = "";
+        
+        if (searchRes.data.AbstractText) {
+            results += `RESUM PRINCIPAL: ${searchRes.data.AbstractText}\n\n`;
+        }
+
         if (searchRes.data.RelatedTopics && searchRes.data.RelatedTopics.length > 0) {
-            results += "\n\nTemes relacionats:\n" + searchRes.data.RelatedTopics.slice(0, 3).map(t => t.Text).join('\n');
+            results += "DETALLS ADDICIONALS TROBATS:\n";
+            searchRes.data.RelatedTopics.slice(0, 5).forEach((topic, i) => {
+                if (topic.Text) {
+                    results += `${i+1}. ${topic.Text}\n`;
+                } else if (topic.Topics) {
+                    // Per a temes agrupats
+                    topic.Topics.slice(0, 2).forEach(subtopic => {
+                        results += `- ${subtopic.Text}\n`;
+                    });
+                }
+            });
+        }
+
+        if (!results) {
+            results = "No s'ha trobat informació específica, però suggereix comprovar les connexions i reiniciar l'aparell.";
         }
 
         res.json({ results });
     } catch (error) {
+        console.error('Error en la cerca:', error);
         res.status(500).json({ results: "Error en la cerca a la web." });
     }
 });

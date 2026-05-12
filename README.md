@@ -13,4 +13,4 @@ Aquest projecte és un assistent intel·ligent dissenyat per ajudar a resoldre p
 - `PROCES.md`: Registre detallat del desenvolupament (per ús intern).
 
 ---
-*Projecte creat per al mòdul de Digitalització - Politecnic Llevant.*
+*Projecte creat per **Miquel Bauçà Rigo** (mbauca1340@alumnes.politecnicllevant.cat) per al mòdul de Digitalització - Politecnic Llevant.*
